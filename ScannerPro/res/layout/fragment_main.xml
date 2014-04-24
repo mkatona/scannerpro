@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,9 +8,37 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="hu.u_szeged.scannerpro.MainActivity$PlaceholderFragment" >
 
-    <TextView
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:src="@drawable/app_icon" />
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="20dp" >
+
+        <Button
+            android:id="@+id/buttonNewScan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Új leolvasás" />
+
+        <Button
+            android:id="@+id/buttonOldScans"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Korábbi leolvasások" />
+
+        <Button
+            android:id="@+id/buttonSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Beállítások" />
+
+    </LinearLayout>
+
+</FrameLayout>
