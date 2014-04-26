@@ -2,12 +2,14 @@
 package hu.u_szeged.scannerpro.ui.fragments.views;
 
 
+import java.util.Date;
 import java.util.List;
 
 import hu.u_szeged.scannerpro.R;
 import hu.u_szeged.scannerpro.model.DAO;
 import hu.u_szeged.scannerpro.model.beans.Customer;
 import hu.u_szeged.scannerpro.model.beans.Reading;
+import hu.u_szeged.scannerpro.model.exceptions.CommitToDatabaseFailedException;
 import hu.u_szeged.scannerpro.ui.fragments.components.CustomerThumbnailFragment;
 import hu.u_szeged.scannerpro.ui.fragments.components.ReadingThumbnailFragment;
 import android.app.AlertDialog;
@@ -32,6 +34,7 @@ public class ScanResultFragment extends Fragment
 	
 	private Reading result;
 	private Customer customer;
+	private boolean preventLayoutOnStart = false;
 	
 	public ScanResultFragment()
 	{
@@ -75,6 +78,42 @@ public class ScanResultFragment extends Fragment
 						})
 						.setIcon(android.R.drawable.ic_dialog_alert)
 						.show();
+				} 
+				catch (IllegalStateException e) 
+				{
+					new AlertDialog.Builder(getActivity())
+							.setTitle("Adatbázis hiba")
+							.setMessage("Az adatbázis nem áll készen")
+							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									// do nothing
+								}
+							})
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.show();
+					
+					e.printStackTrace();
+				} 
+				catch (CommitToDatabaseFailedException e) 
+				{
+					new AlertDialog.Builder(getActivity())
+							.setTitle("Adatbázis hiba")
+							.setMessage("Sikertelen tranzakció")
+							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									// do nothing
+								}
+							})
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.show();
+					
+					e.printStackTrace();
 				}
 			}
 		});
@@ -96,8 +135,57 @@ public class ScanResultFragment extends Fragment
 	{
 		super.onStart();
 		
-		layoutCustomer();
-		layoutResult();
+		if(!preventLayoutOnStart)
+		{
+			layoutCustomer();
+			layoutResult();
+		}
+		
+		preventLayoutOnStart = false;
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		if(customer != null)
+		{
+			outState.putString("customer.id", customer.getId());
+		}
+		
+		if(result != null)
+		{
+			outState.putInt("result.reading", result.getReading());
+			outState.putLong("result.timestamp", result.getTimestamp().getTime());
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("customer.id"))
+		{
+			setCustomer(DAO.FindCustomerById(savedInstanceState.getString("customer.id")));
+		}
+		else
+		{
+			setCustomer(null);
+		}
+
+		if(savedInstanceState.containsKey("result.reading") && savedInstanceState.containsKey("result.timestamp"))
+		{
+			result = new Reading(null, savedInstanceState.getInt("result.reading"), new Date(savedInstanceState.getLong("result.timestamp")));
+		}
+		
+		preventLayoutOnStart = true;
 	}
 	
 	

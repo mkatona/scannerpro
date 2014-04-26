@@ -4,6 +4,7 @@ package hu.u_szeged.scannerpro.model.beans;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -25,6 +26,15 @@ public class Customer
 	private String meterType;
 	private SortedSet<Reading> readings;
 	
+	private static final Comparator<Reading> READING_COMPARATOR = new Comparator<Reading>() {
+		
+		@Override
+		public int compare(Reading lhs, Reading rhs)
+		{
+			return lhs.getTimestamp().compareTo(rhs.getTimestamp());
+		}
+	};
+	
 	/**
 	 * Creates a new Customer
 	 * 
@@ -40,14 +50,7 @@ public class Customer
 		}
 		
 		this.id = id;
-		this.readings = new TreeSet<Reading>(new Comparator<Reading>() {
-			
-			@Override
-			public int compare(Reading lhs, Reading rhs)
-			{
-				return lhs.getTimestamp().compareTo(rhs.getTimestamp());
-			}
-		});
+		this.readings = new TreeSet<Reading>(READING_COMPARATOR);
 	}
 	
 	
@@ -161,5 +164,61 @@ public class Customer
 	public List<Reading> getReadings()
 	{
 		return new ArrayList<Reading>(readings);
+	}
+
+
+	/**
+	 * Synchronize the readings of this customer from the passed list
+	 * 
+	 * @param readings the list of readings to set for this customer
+	 */
+	public void syncReadingsFrom(List<Reading> readings)
+	{
+		TreeSet<Reading> newReadings = new TreeSet<Reading>(READING_COMPARATOR);
+				
+		for(Reading reading : readings)
+		{
+			Reading match = null;
+			
+			for(Reading currentReading : this.readings)
+			{
+				if(currentReading.getTimestamp().equals(reading.getTimestamp()))
+				{
+					match = currentReading;
+					break;
+				}
+			}
+			
+			if(match != null)
+			{
+				match.setReading(reading.getReading());
+				newReadings.add(match);
+			}
+			else
+			{
+				newReadings.add(reading);
+			}
+		}
+		
+		this.readings = newReadings;
+	}
+
+
+	/**
+	 * @param timestamp the timestamp to look for
+	 * 
+	 * @return the reading made exactly at the passed timestamp or null
+	 */
+	public Reading findReadingByTimestamp(Date timestamp)
+	{
+		for(Reading reading : readings)
+		{
+			if(reading.getTimestamp().equals(timestamp))
+			{
+				return reading;
+			}
+		}
+		
+		return null;
 	}
 }

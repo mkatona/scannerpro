@@ -12,7 +12,7 @@
     <SurfaceView
         android:id="@+id/surfaceViewCamera"
         android:layout_width="match_parent"
-        android:layout_height="175dp" />
+        android:layout_height="225dp" />
 
     <Button
         android:id="@+id/buttonScan"

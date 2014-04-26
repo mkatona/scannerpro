@@ -3,6 +3,7 @@ package hu.u_szeged.scannerpro.ui.activities;
 
 
 import hu.u_szeged.scannerpro.R;
+import hu.u_szeged.scannerpro.model.DAO;
 import hu.u_szeged.scannerpro.ui.fragments.views.MainFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -18,6 +19,9 @@ public class MainActivity extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		DAO.Init(this);
+		
 		setContentView(R.layout.activity_main);
 		
 		if (savedInstanceState == null) {
@@ -26,6 +30,13 @@ public class MainActivity extends ActionBarActivity
 			//ft.addToBackStack(null);
 			ft.commit();
 		}
+	}
+	
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		DAO.Destroy();
 	}
 	
 	@Override
