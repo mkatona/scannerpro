@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomerThumbnailFragment">
+        <attr name="hide_controls" format="boolean"/>
+    </declare-styleable> 
+    <declare-styleable name="ReadingThumbnailFragment">
+        <attr name="hide_customer" format="boolean"/>
+    </declare-styleable> 
+</resources>
