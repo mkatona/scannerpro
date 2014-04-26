@@ -63,17 +63,14 @@ public class CustomersFragment extends Fragment
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				if (started)
+				filter = s.toString();
+					
+				if (filter != null && filter.equals(""))
 				{
-					filter = s.toString();
-					
-					if (filter != null && filter.equals(""))
-					{
-						filter = null;
-					}
-					
-					layoutCustomers();
+					filter = null;
 				}
+				
+				layoutCustomers();
 			}
 		});
 		
@@ -91,9 +88,9 @@ public class CustomersFragment extends Fragment
 	{
 		super.onStart();
 		
-		layoutCustomers();
-		
 		started = true;
+		
+		layoutCustomers();
 	}
 	
 	/* (non-Javadoc)
@@ -107,11 +104,45 @@ public class CustomersFragment extends Fragment
 		started = false;
 	}
 	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		if(filter != null)
+		{
+			outState.putString("filter", filter);
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("filter"))
+		{
+			filter = savedInstanceState.getString("filter");
+		}
+		
+		layoutCustomers();
+	}
+	
 	/**
 	 * Lays out the list of customers
 	 */
 	private void layoutCustomers()
 	{
+		if(!started || getView() == null)
+		{
+			return;
+		}
+		
 		LinearLayout panelCustomerList = (LinearLayout) getView().findViewById(R.id.panelCustomerList);
 		
 		panelCustomerList.removeAllViews();

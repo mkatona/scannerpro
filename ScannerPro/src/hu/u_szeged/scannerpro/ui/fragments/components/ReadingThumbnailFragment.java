@@ -3,10 +3,12 @@ package hu.u_szeged.scannerpro.ui.fragments.components;
 
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import hu.u_szeged.scannerpro.R;
 import hu.u_szeged.scannerpro.model.DAO;
 import hu.u_szeged.scannerpro.model.beans.Reading;
+import hu.u_szeged.scannerpro.model.exceptions.CommitToDatabaseFailedException;
 import hu.u_szeged.scannerpro.ui.fragments.views.ViewCustomerFragment;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -68,9 +70,48 @@ public class ReadingThumbnailFragment extends Fragment
 							@Override
 							public void onClick(DialogInterface dialog, int which)
 							{
-								reading.getCustomer().removeReading(reading);
-								DAO.Commit();
-								getActivity().getSupportFragmentManager().beginTransaction().remove(ReadingThumbnailFragment.this).commit();
+								try
+								{
+									reading.getCustomer().removeReading(reading);
+									DAO.Commit();
+									getActivity().getSupportFragmentManager().beginTransaction().remove(ReadingThumbnailFragment.this).commit();
+								} 
+								catch (IllegalStateException e) 
+								{
+									new AlertDialog.Builder(getActivity())
+											.setTitle("Adatbázis hiba")
+											.setMessage("Az adatbázis nem áll készen")
+											.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+												
+												@Override
+												public void onClick(DialogInterface dialog, int which)
+												{
+													// do nothing
+												}
+											})
+											.setIcon(android.R.drawable.ic_dialog_alert)
+											.show();
+									
+									e.printStackTrace();
+								} 
+								catch (CommitToDatabaseFailedException e) 
+								{
+									new AlertDialog.Builder(getActivity())
+											.setTitle("Adatbázis hiba")
+											.setMessage("Sikertelen tranzakció")
+											.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+												
+												@Override
+												public void onClick(DialogInterface dialog, int which)
+												{
+													// do nothing
+												}
+											})
+											.setIcon(android.R.drawable.ic_dialog_alert)
+											.show();
+									
+									e.printStackTrace();
+								}
 							}
 						})
 						.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -107,6 +148,47 @@ public class ReadingThumbnailFragment extends Fragment
 		super.onStart();
 		
 		layoutReading();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		outState.putBoolean("hideCustomer", hideCustomer);
+		
+		if(reading != null)
+		{
+			outState.putString("reading.customer.id", reading.getCustomer().getId());
+			outState.putLong("reading.timestamp", reading.getTimestamp().getTime());
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("hideCustomer"))
+		{
+			setHideCustomer(savedInstanceState.getBoolean("hideCustomer"));
+		}
+		
+		if(savedInstanceState.containsKey("reading.customer.id") && savedInstanceState.containsKey("reading.timestamp"))
+		{
+			setReading(
+					DAO.FindCustomerById(savedInstanceState.getString("reading.customer.id"))
+						.findReadingByTimestamp(new Date(savedInstanceState.getLong("reading.timestamp"))));
+		}
+		else
+		{
+			setReading(null);
+		}
 	}
 	
 	

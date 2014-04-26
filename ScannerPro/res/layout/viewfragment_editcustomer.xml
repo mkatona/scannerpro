@@ -8,56 +8,62 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="hu.u_szeged.scannerpro.ui.fragments.views.EditCustomerFragment" >
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_marginBottom="100dp" >
 
-        <EditText
-            android:id="@+id/editTextCustomerId"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="Ügyfélazonosító" >
+            android:orientation="vertical" >
 
-            <requestFocus />
-        </EditText>
+            <EditText
+                android:id="@+id/editTextCustomerId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="Ügyfélazonosító" >
 
-        <EditText
-            android:id="@+id/editTextCustomerName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="Ügyfél neve"
-            android:inputType="textPersonName" />
+                <requestFocus />
+            </EditText>
 
-        <EditText
-            android:id="@+id/editTextCustomerAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="Fogyasztási hely"
-            android:inputType="textPostalAddress" />
+            <EditText
+                android:id="@+id/editTextCustomerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="Ügyfél neve"
+                android:inputType="textPersonName" />
 
-        <EditText
-            android:id="@+id/editTextMeterId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="Mérőóra azonosítója" />
+            <EditText
+                android:id="@+id/editTextCustomerAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="Fogyasztási hely"
+                android:inputType="textPostalAddress" />
 
-        <EditText
-            android:id="@+id/editTextMeterType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="Mérőóra típusa" />
-    </LinearLayout>
+            <EditText
+                android:id="@+id/editTextMeterId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="Mérőóra azonosítója" />
+
+            <EditText
+                android:id="@+id/editTextMeterType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="Mérőóra típusa" />
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

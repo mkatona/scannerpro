@@ -54,17 +54,14 @@ public class OldScansFragment extends Fragment
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				if (started)
+				filter = s.toString();
+				
+				if (filter != null && filter.equals(""))
 				{
-					filter = s.toString();
-					
-					if (filter != null && filter.equals(""))
-					{
-						filter = null;
-					}
-					
-					layoutReadings();
+					filter = null;
 				}
+				
+				layoutReadings();
 			}
 		});
 		
@@ -82,9 +79,9 @@ public class OldScansFragment extends Fragment
 	{
 		super.onStart();
 		
-		layoutReadings();
-		
 		started = true;
+		
+		layoutReadings();
 	}
 	
 	/* (non-Javadoc)
@@ -98,11 +95,45 @@ public class OldScansFragment extends Fragment
 		started = false;
 	}
 	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		if(filter != null)
+		{
+			outState.putString("filter", filter);
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("filter"))
+		{
+			filter = savedInstanceState.getString("filter");
+		}
+		
+		layoutReadings();
+	}
+	
 	/**
 	 * Lays out the list of customers
 	 */
 	private void layoutReadings()
 	{
+		if(!started || getView() == null)
+		{
+			return;
+		}
+		
 		LinearLayout panelReadingsList = (LinearLayout) getView().findViewById(R.id.panelReadingsList);
 		
 		panelReadingsList.removeAllViews();

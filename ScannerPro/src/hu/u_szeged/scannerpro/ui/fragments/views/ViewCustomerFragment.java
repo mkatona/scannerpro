@@ -5,6 +5,7 @@ package hu.u_szeged.scannerpro.ui.fragments.views;
 import com.google.common.collect.Lists;
 
 import hu.u_szeged.scannerpro.R;
+import hu.u_szeged.scannerpro.model.DAO;
 import hu.u_szeged.scannerpro.model.beans.Customer;
 import hu.u_szeged.scannerpro.model.beans.Reading;
 import hu.u_szeged.scannerpro.ui.fragments.components.ReadingThumbnailFragment;
@@ -43,6 +44,37 @@ public class ViewCustomerFragment extends Fragment
 		super.onStart();
 		
 		layoutCustomer();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		if(customer != null)
+		{
+			outState.putString("customer.id", customer.getId());
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("customer.id"))
+		{
+			setCustomer(DAO.FindCustomerById(savedInstanceState.getString("customer.id")));
+		}
+		else
+		{
+			setCustomer(null);
+		}
 	}
 	
 	

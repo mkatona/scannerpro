@@ -17,7 +17,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="hu.u_szeged.scannerpro.ui.activities.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

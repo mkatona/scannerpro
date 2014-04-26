@@ -3,6 +3,7 @@ package hu.u_szeged.scannerpro.ui.fragments.components;
 
 
 import hu.u_szeged.scannerpro.R;
+import hu.u_szeged.scannerpro.model.DAO;
 import hu.u_szeged.scannerpro.model.beans.Customer;
 import hu.u_szeged.scannerpro.ui.fragments.views.EditCustomerFragment;
 import hu.u_szeged.scannerpro.ui.fragments.views.ViewCustomerFragment;
@@ -81,6 +82,44 @@ public class CustomerThumbnailFragment extends Fragment
 		
 		layoutCustomer();
 		updateHideControls();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		outState.putBoolean("hideControls", hideControls);
+		
+		if(customer != null)
+		{
+			outState.putString("customer.id", customer.getId());
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("hideControls"))
+		{
+			setHideControls(savedInstanceState.getBoolean("hideControls"));
+		}
+		
+		if(savedInstanceState.containsKey("customer.id"))
+		{
+			setCustomer(DAO.FindCustomerById(savedInstanceState.getString("customer.id")));
+		}
+		else
+		{
+			setCustomer(null);
+		}
 	}
 	
 	

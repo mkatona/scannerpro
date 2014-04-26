@@ -5,6 +5,7 @@ package hu.u_szeged.scannerpro.ui.fragments.views;
 import hu.u_szeged.scannerpro.R;
 import hu.u_szeged.scannerpro.model.DAO;
 import hu.u_szeged.scannerpro.model.beans.Customer;
+import hu.u_szeged.scannerpro.model.exceptions.CommitToDatabaseFailedException;
 import hu.u_szeged.scannerpro.model.exceptions.CustomerIDExistsException;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -24,6 +25,7 @@ public class EditCustomerFragment extends Fragment
 {
 	
 	private Customer customer;
+	private boolean preventLayoutOnStart = false;
 	
 	public EditCustomerFragment()
 	{
@@ -60,34 +62,70 @@ public class EditCustomerFragment extends Fragment
 				catch (IllegalArgumentException e)
 				{
 					new AlertDialog.Builder(getActivity())
-						.setTitle("Hibás ügyfélazonosító")
-						.setMessage("Az ügyfélazonosító megadása kötelezõ")
-						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-						
-							@Override
-							public void onClick(DialogInterface dialog, int which)
-							{
-								// do nothing
-							}
-						})
-						.setIcon(android.R.drawable.ic_dialog_alert)
-						.show();
+							.setTitle("Hibás ügyfélazonosító")
+							.setMessage("Az ügyfélazonosító megadása kötelezõ")
+							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									// do nothing
+								}
+							})
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.show();
 				}
 				catch (CustomerIDExistsException e)
 				{
 					new AlertDialog.Builder(getActivity())
-						.setTitle("Hibás ügyfélazonosító")
-						.setMessage("Ezzel az azonosítóval már szerepel ügyfél az adatbázisban")
-						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-						
-							@Override
-							public void onClick(DialogInterface dialog, int which)
-							{
-								// do nothing
-							}
-						})
-						.setIcon(android.R.drawable.ic_dialog_alert)
-						.show();
+							.setTitle("Hibás ügyfélazonosító")
+							.setMessage("Ezzel az azonosítóval már szerepel ügyfél az adatbázisban")
+							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									// do nothing
+								}
+							})
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.show();
+				} 
+				catch (IllegalStateException e) 
+				{
+					new AlertDialog.Builder(getActivity())
+							.setTitle("Adatbázis hiba")
+							.setMessage("Az adatbázis nem áll készen")
+							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									// do nothing
+								}
+							})
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.show();
+					
+					e.printStackTrace();
+				} 
+				catch (CommitToDatabaseFailedException e) 
+				{
+					new AlertDialog.Builder(getActivity())
+							.setTitle("Adatbázis hiba")
+							.setMessage("Sikertelen tranzakció")
+							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									// do nothing
+								}
+							})
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.show();
+					
+					e.printStackTrace();
 				}
 			}
 		});
@@ -98,32 +136,71 @@ public class EditCustomerFragment extends Fragment
 			public void onClick(View v)
 			{
 				new AlertDialog.Builder(getActivity())
-					.setTitle("Ügyfél törlése")
-					.setMessage("Biztosan törli ezt az ügyfelet?")
-					.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-					
-						@Override
-						public void onClick(DialogInterface dialog, int which)
-						{
-							if(customer != null)
-							{
-								DAO.RemoveCustomer(customer).commit();
-								setCustomer(null);	
-							}
+						.setTitle("Ügyfél törlése")
+						.setMessage("Biztosan törli ezt az ügyfelet?")
+						.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 							
-							getFragmentManager().popBackStack();
-						}
-					})
-					.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-					
-						@Override
-						public void onClick(DialogInterface dialog, int which)
-						{
-							// do nothing
-						}
-					})
-					.setIcon(android.R.drawable.ic_dialog_alert)
-					.show();
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								try
+								{
+									if (customer != null)
+									{
+										DAO.RemoveCustomer(customer).commit();
+										setCustomer(null);
+									}
+									
+									getFragmentManager().popBackStack();
+								} 
+								catch (IllegalStateException e) 
+								{
+									new AlertDialog.Builder(getActivity())
+											.setTitle("Adatbázis hiba")
+											.setMessage("Az adatbázis nem áll készen")
+											.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+												
+												@Override
+												public void onClick(DialogInterface dialog, int which)
+												{
+													// do nothing
+												}
+											})
+											.setIcon(android.R.drawable.ic_dialog_alert)
+											.show();
+									
+									e.printStackTrace();
+								} 
+								catch (CommitToDatabaseFailedException e) 
+								{
+									new AlertDialog.Builder(getActivity())
+											.setTitle("Adatbázis hiba")
+											.setMessage("Sikertelen tranzakció")
+											.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+												
+												@Override
+												public void onClick(DialogInterface dialog, int which)
+												{
+													// do nothing
+												}
+											})
+											.setIcon(android.R.drawable.ic_dialog_alert)
+											.show();
+									
+									e.printStackTrace();
+								}
+							}
+						})
+						.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								// do nothing
+							}
+						})
+						.setIcon(android.R.drawable.ic_dialog_alert)
+						.show();
 			}
 		});
 		
@@ -132,10 +209,45 @@ public class EditCustomerFragment extends Fragment
 	}
 	
 	@Override
-	public void onStart() {
+	public void onStart()
+	{
 		super.onStart();
 		
-		layoutCustomer();
+		if(!preventLayoutOnStart)
+		{
+			layoutCustomer();
+		}
+		
+		preventLayoutOnStart = false;
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		if(customer != null)
+		{
+			outState.putString("customer.id", customer.getId());
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("customer.id"))
+		{
+			customer = DAO.FindCustomerById(savedInstanceState.getString("customer.id"));
+		}
+		
+		preventLayoutOnStart = true;
 	}
 	
 	
@@ -157,10 +269,10 @@ public class EditCustomerFragment extends Fragment
 		
 		layoutCustomer();
 	}
-
+	
 	private void layoutCustomer()
 	{
-		if(getView() == null)
+		if (getView() == null)
 		{
 			return;
 		}

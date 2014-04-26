@@ -77,12 +77,9 @@ public class ScanFragment extends Fragment
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				if (started)
-				{
-					customer = DAO.FindCustomerById(s.toString());
+				customer = DAO.FindCustomerById(s.toString());
 					
-					layoutCustomer();
-				}
+				layoutCustomer();
 			}
 		});
 		
@@ -100,12 +97,12 @@ public class ScanFragment extends Fragment
 	{
 		super.onStart();
 		
+		started = true;
+		
 		layoutCustomer();
 		
 		((AutoCompleteTextView) getView().findViewById(R.id.autoCompleteTextViewCustomerId))
 			.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, DAO.GetAllCustomerIDs()));
-		
-		started = true;
 	}
 	
 	/*
@@ -121,11 +118,45 @@ public class ScanFragment extends Fragment
 		started = false;
 	}
 	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		if(customer != null)
+		{
+			outState.putString("customer.id", customer.getId());
+		}
+		
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		
+		if(savedInstanceState == null)
+		{
+			return;
+		}
+		
+		if(savedInstanceState.containsKey("customer.id"))
+		{
+			customer = DAO.FindCustomerById(savedInstanceState.getString("customer.id"));
+		}
+		
+		layoutCustomer();
+	}
+	
 	/**
 	 * Lays out the list of customers
 	 */
 	private void layoutCustomer()
 	{
+		if(!started || getView() == null)
+		{
+			return;
+		}
+		
 		LinearLayout panelCustomerInfo = (LinearLayout) getView().findViewById(R.id.linearLayoutCustomerInfo);
 		
 		panelCustomerInfo.removeAllViews();
