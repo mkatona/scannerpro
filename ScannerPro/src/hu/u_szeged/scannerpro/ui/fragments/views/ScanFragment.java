@@ -1,4 +1,3 @@
-
 package hu.u_szeged.scannerpro.ui.fragments.views;
 
 
@@ -21,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 
@@ -31,26 +31,35 @@ public class ScanFragment extends Fragment
 {
 	
 	private boolean started = false;
+	
 	private Customer customer;
 	
-	public ScanFragment()
-	{
-	}
+	// camera preview
+	private CameraPreview cameraPreview;
 	
-	// TODO: cameraview meghajtása: http://stackoverflow.com/a/10482872/301134
+	public ScanFragment() { }
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View rootView = inflater.inflate(R.layout.viewfragment_scan, container, false);
 		
+		// Camera view meghajtas.
+		cameraPreview = new CameraPreview( getActivity() );
+		
+		FrameLayout cameraFrameLayout = (FrameLayout) rootView.findViewById( R.id.cameraFrameLayout );
+		cameraFrameLayout.addView( cameraPreview );
+		// Camera view meghajtas.
+		
 		rootView.findViewById(R.id.buttonScan).setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				int data = 42; // TODO: ide beírni a kiparseolt számot; a gomb csak akkor legyen engedélyezve, ha van mit parsolni és a customer != null
+				int data = cameraPreview.completeScan(); 
 				
 				Reading result = new Reading(data);		
 				
+				// TOTO: uncommentezni!
+				/*
 				ScanResultFragment resultView = new ScanResultFragment();
 				resultView.setCustomer(customer);
 				resultView.setResult(result);
@@ -58,7 +67,7 @@ public class ScanFragment extends Fragment
 				final FragmentTransaction ft = getFragmentManager().beginTransaction(); 
 				ft.replace(R.id.container, resultView); 
 				ft.addToBackStack(null);
-				ft.commit(); 
+				ft.commit(); */
 			}
 		});		
 			
